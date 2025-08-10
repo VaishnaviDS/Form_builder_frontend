@@ -8,7 +8,8 @@ const Forms = () => {
   const [status, setStatus] = useState({});
   const [marksByForm, setMarksByForm] = useState({});
   const [searchTerm, setSearchTerm] = useState("");
-  const [loading, setLoading] = useState(true); // NEW: Loading state
+  const [loading, setLoading] = useState(true); // Loading forms
+  const [loadingStatus, setLoadingStatus] = useState(true); // Loading status
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -19,7 +20,7 @@ const Forms = () => {
       } catch (err) {
         console.error("Error fetching forms:", err);
       } finally {
-        setLoading(false); // Stop loading after fetch
+        setLoading(false);
       }
     };
     fetchForms();
@@ -27,6 +28,7 @@ const Forms = () => {
 
   useEffect(() => {
     const checkResponses = async () => {
+      setLoadingStatus(true); // start loading status
       try {
         const statusObj = {};
         for (let form of forms) {
@@ -38,16 +40,24 @@ const Forms = () => {
         setStatus(statusObj);
       } catch (err) {
         console.error("Error checking responses:", err);
+      } finally {
+        setLoadingStatus(false); // done loading status
       }
     };
 
     if (forms.length > 0) {
       checkResponses();
+    } else {
+      setLoadingStatus(false); // no forms, so no status to load
     }
   }, [forms]);
 
+  // Function to toggle marks visibility and fetch marks if needed
   const toggleMarks = async (formId) => {
-    if (marksByForm[formId]?.data) {
+    const current = marksByForm[formId];
+
+    // If marks already fetched, just toggle visibility
+    if (current?.data) {
       setMarksByForm((prev) => ({
         ...prev,
         [formId]: {
@@ -58,6 +68,7 @@ const Forms = () => {
       return;
     }
 
+    // Otherwise fetch marks data
     setMarksByForm((prev) => ({
       ...prev,
       [formId]: { loading: true, error: null, data: null, visible: true },
@@ -83,13 +94,8 @@ const Forms = () => {
     }
   };
 
-  // Filter forms by search term
-  const filteredForms = forms.filter((form) =>
-    form.title.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  // Loading state like Dashboard
-  if (loading) {
+  // Show loading until both forms and status finish loading
+  if (loading || loadingStatus) {
     return (
       <div className="min-h-screen flex items-center justify-center text-white bg-gradient-to-br from-[#1c1f2a] to-[#11131b]">
         Loading forms...
@@ -97,12 +103,15 @@ const Forms = () => {
     );
   }
 
+  const filteredForms = forms.filter((form) =>
+    form.title.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#1c1f2a] to-[#11131b] text-white p-6">
       <div className="max-w-5xl mx-auto">
         <h1 className="text-3xl font-bold mb-6">📋 Available Forms</h1>
 
-        {/* Search Bar */}
         <input
           type="text"
           placeholder="Search forms..."
@@ -128,7 +137,6 @@ const Forms = () => {
               key={form._id}
               className="bg-gray-800 rounded-xl p-5 mb-5 shadow-lg border border-gray-700"
             >
-              {/* Title and Buttons Row */}
               <div className="flex justify-between items-center mb-3">
                 <h3 className="text-xl font-semibold">{form.title}</h3>
                 <div className="flex gap-3">
@@ -158,12 +166,10 @@ const Forms = () => {
                 </div>
               </div>
 
-              {/* Description */}
               <p className="text-gray-400">
                 {form.description || "No description."}
               </p>
 
-              {/* Marks Section */}
               {marksInfo.visible && (
                 <>
                   {marksInfo.loading && (
