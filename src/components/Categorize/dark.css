@@ -1,0 +1,51 @@
+/* dark-theme.css */
+body {
+  background-color: #121212;
+  color: #f5f5f5;
+  font-family: Arial, sans-serif;
+}
+
+/* Scrollbar for overflow-auto */
+.flex::-webkit-scrollbar {
+  height: 8px;
+}
+.flex::-webkit-scrollbar-thumb {
+  background-color: #444;
+  border-radius: 4px;
+}
+.flex::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Column container */
+.bg-gray-100 {
+  background-color: #1e1e1e !important;
+  border: 1px solid #2e2e2e;
+}
+
+/* Column heading */
+h3 {
+  color: #ffffff;
+}
+
+/* Draggable items */
+.bg-white {
+  background-color: #2b2b2b !important;
+  color: #f0f0f0;
+  border: 1px solid #3a3a3a;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+.bg-white:hover {
+  background-color: #3a3a3a;
+  transform: scale(1.02);
+}
+
+/* Shadows in dark mode */
+.shadow {
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* Rounded corners keep looking nice */
+.rounded {
+  border-radius: 8px;
+}
